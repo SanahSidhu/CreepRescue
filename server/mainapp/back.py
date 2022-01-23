@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 from twilio.twiml.messaging_response import MessagingResponse
 from twilio.rest import Client
 
+from server.mainapp.models import chk_user_exist, get_email, get_mob_no
+from server.mainapp.utils import chatbot, fake_call, send_loc, signup
+
 load_dotenv()
 account_sid = os.getenv("twilio_sid")
 auth_token = os.getenv("twilio_token")
@@ -21,45 +24,80 @@ app = Flask(__name__)
 app.secret_key = key_secret
 
 
+path = ""
+
+
+@app.before_request
+def security():
+    g.user = None
+    if 'user_email' in session:
+        emails = get_email(path)
+        try:
+            useremail = [
+                email for email in emails if email[0] == session["user_email"]
+            ][0]
+            g.user = useremail
+        except Exception as e:
+            print(e)
+
+
+@app.route("/", methods = ["GET","POST"])
+def login():
+    """
+    Login Page
+    """
+    session.pop("user_email", None)
+
+    if request.method == "POST":
+        u_name = request.form.get('name')
+        u_email = request.form.get('email')
+        u_num = request.form.get('mob_no')
+        u_pwd = request.form.get('password')
+
+
+        if u_name and u_num:
+            if chk_user_exist(path, u_email):
+                return render_template("login.html", user_exists=True)
+            else:
+                data = (u_name,u_email,u_num,u_pwd)
+                signup(path,data)
+                return render_template("login.html",success=True)
+        
+        if u_email and u_pwd and not u_num:
+            if l_res := login(path, u_email, u_pwd):
+                if not isinstance(l_res, str):
+                    return render_template("home.html")
+                else:
+                    return render_template("login.html", error = l_res)
+    else:
+        return render_template("login.html")
+
+
+@app.route("/home", methods=["GET", "POST"])
+def index():
+    """
+    Home Page
+    """
+    if g.user:
+        return render_template("home.html")
+    return redirect("/")
+
+
 @app.route("/sms", methods = ["POST", "GET"])
-def chatbot():
-    bmsg = request.values.get('Body', '').lower()
-    bmsg_words = bmsg.split()
-    rep_json = open("C:\\Users\\SANAH\\Desktop\\creepjson.json")
-    response = json.load(rep_json)
+def chat_bot():
+    chatbot()
+    render_template("cbot.html")
 
-    #Twilio Syntax
+@app.route("/call", methods = ["POST", "GET"])
+def call():
+     if g.user:
+        user_email = g.user
 
-    rep = ""
+        fake_call(path, user_email, account_sid, auth_token)
+        render_template("call.html")
 
-    for word in bmsg_words:
-        if word in response:
-            rep = response[word]
-        else:
-            rep = response["default"]
+@app.route("/mapurl", methods = ["POST", "GET"])
+def loc():
+    url_link = send_loc(url)
+    return render_template("mapurl.html", result = url_link)
 
-    resp = MessagingResponse()
-    msg = resp.message()
-
-    rep = "\n" + rep
-    msg.body(rep)
-
-    return str(resp)
-
-
-def fake_call():
-    client = Client(account_sid,auth_token)
-    call = client.calls.create(to = os.getenv("my_phone_no"), from_ = "+16205829065", url = "http://demo.twilio.com/docs/voice.xml")        ##  get user mob no from session    !!!!
-    print(call.sid)
-
-
-def send_loc():
-    pool_request = requests.Session()
-
-    response = pool_request.post(url)
-    data = response.json()
-
-    lat = data['location']['lat']
-    lng = data['location']['lng']
-
-    map_url = f"https://www.google.com/maps/search/?api=1&query={lat}%2C{lng}"
