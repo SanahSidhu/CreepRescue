@@ -21,6 +21,7 @@
                     <input type="text" class="input-field" name = "Password" placeholder="Enter Password" required>
                     <button type="submit" class="submit-btn" >Log In</button>
                     <h3>{{error}}</h3>
+
                 </form>
                 <form id="signup" class="input-group" method="POST">
                     <input type="text" class="input-field" name = "Name" placeholder="Enter Your Name" required>
@@ -28,6 +29,9 @@
                     <input type="text" class="input-field" name = "Mobile No" placeholder="Mobile No with area code and no spaces" required>
                     <input type="text" class="input-field" name = "Password" placeholder="Enter Password" required>
                     <button type="submit" class="submit-btn" >Sign Up</button>
+                    {% if user_exists %}
+                        <h3>You already have an account with this email. Please login.</h3>
+                    {% endif %}
                     <h3>{{error}}</h3>
                 </form>
                 
@@ -54,6 +58,7 @@
             z.style.left = "0";
         }
     </script>
+
 
 </body>
 </html>
