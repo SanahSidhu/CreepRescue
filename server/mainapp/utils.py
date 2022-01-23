@@ -2,7 +2,6 @@
 import requests
 from flask import *
 from twilio.rest import Client
-from twilio.twiml.messaging_response import MessagingResponse
 from mainapp.models import add_user, chk_user_exist, chk_user_pwd, get_mob_no
 
 def signup(path: str, data: tuple):
@@ -17,32 +16,6 @@ def login_user(path: str, user_email: str, passw: str):
             return "Incorrect Email or Password. Please try again."
     else:
         return "This user does not exist. Please sign up."
-    
-def chatbot():
-    print("in chatbot")
-    bmsg = request.values.get('Body', '').lower()
-    print(bmsg)
-    bmsg_words = bmsg.split()
-    rep_json = open("C:\\Users\\SANAH\\Desktop\\creepjson.json")
-    response = json.load(rep_json)
-
-    #Twilio Syntax
-
-    rep = ""
-
-    for word in bmsg_words:
-        if word in response:
-            rep = response[word]
-        else:
-            rep = response["default"]
-
-    resp = MessagingResponse()
-    msg = resp.message()
-
-    rep = "\n" + rep
-    msg.body(rep)
-
-    return str(resp)
 
 
 def fake_call(path: str, user_email: str, account_sid:str, auth_token: str):

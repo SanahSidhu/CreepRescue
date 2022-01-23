@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 from twilio.twiml.messaging_response import MessagingResponse
 from mainapp.models import chk_user_exist, get_email,user
-from mainapp.utils import chatbot, fake_call, send_loc, signup, login_user
+from mainapp.utils import fake_call, send_loc, signup, login_user
 
 load_dotenv()
 account_sid = os.getenv("twilio_sid")
