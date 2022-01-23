@@ -16,19 +16,21 @@
                     "signup()">Sign Up</button>
                 </div>
                 
-                <form id="login" class="input-group">
-                    <input type="text" class="input-field" placeholder="Email Id" required>
-                    <input type="text" class="input-field" placeholder="Password" required>
+                <form id="login" class="input-group" method="POST">
+                    <input type="text" class="input-field" name = "Email Id" placeholder="Enter Email Id" required>
+                    <input type="text" class="input-field" name = "Password" placeholder="Enter Password" required>
                     <button type="submit" class="submit-btn" >Log In</button>
+                    <h3>{{error}}</h3>
                 </form>
-                <form id="signup" class="input-group">
-                    <input type="text" class="input-field" placeholder="Name" required>
-                    <input type="text" class="input-field" placeholder="Email Id" required>
-                    <input type="text" class="input-field" placeholder="Mobile No" required>
-                    <input type="text" class="input-field" placeholder="Password" required>
+                <form id="signup" class="input-group" method="POST">
+                    <input type="text" class="input-field" name = "Name" placeholder="Enter Your Name" required>
+                    <input type="text" class="input-field" name = "Email Id" placeholder="Enter Email Id" required>
+                    <input type="text" class="input-field" name = "Mobile No" placeholder="Mobile No with area code and no spaces" required>
+                    <input type="text" class="input-field" name = "Password" placeholder="Enter Password" required>
                     <button type="submit" class="submit-btn" >Sign Up</button>
+                    <h3>{{error}}</h3>
                 </form>
-
+                
             </div>
 
     </div>
